@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Enhanced Society Issue Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <i class="fas fa-building"></i>
+                    <span>AI Society Tracker</span>
+                </div>
+                <div class="nav-menu">
+                    <button class="nav-btn active" data-view="dashboard">
+                        <i class="fas fa-home"></i> Dashboard
+                    </button>
+                    <button class="nav-btn" data-view="complaints">
+                        <i class="fas fa-exclamation-triangle"></i> New Complaint
+                    </button>
+                    <button class="nav-btn" data-view="my-complaints">
+                        <i class="fas fa-list"></i> My Complaints
+                    </button>
+                    <button class="nav-btn" data-view="admin">
+                        <i class="fas fa-cog"></i> Admin
+                    </button>
+                </div>
+                <div class="user-info">
+                    <div class="user-dropdown">
+                        <button class="user-btn" onclick="toggleUserDropdown()">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="current-user">Resident B-101</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="user-dropdown-menu" id="user-dropdown">
+                            <a href="#" onclick="showProfile()">
+                                <i class="fas fa-user"></i> Profile
+                            </a>
+                            <hr>
+                            <a href="#" onclick="logout()" class="logout-link">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+            </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view active">
+                <div class="dashboard-header">
+                    <h1>Society Issue Tracker Dashboard</h1>
+                    <p class="subtitle">Smart categorization, priority detection, auto-assignment & image verification</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                        <div class="stat-info">
+                            <h3 id="total-complaints">0</h3>
+                            <p>Total Complaints</p>
+            </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                </div>
+                        <div class="stat-info">
+                            <h3 id="pending-complaints">0</h3>
+                            <p>Pending</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon progress">
+                            <i class="fas fa-tools"></i>
+                </div>
+                        <div class="stat-info">
+                            <h3 id="inprogress-complaints">0</h3>
+                            <p>In Progress</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon resolved">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="resolved-complaints">0</h3>
+                            <p>Resolved</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-complaints">
+                    <h2>Recent Complaints</h2>
+                    <div id="recent-complaints-list" class="complaints-list">
+                        <!-- Recent complaints will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Complaint View -->
+            <div id="complaints-view" class="view">
+                <div class="form-container">
+                    <h1>Submit New Complaint</h1>
+                    <form id="complaint-form" class="complaint-form">
+                        <div class="form-group">
+                            <label for="complaint-title">Title *</label>
+                            <input type="text" id="complaint-title" name="title" required 
+                                   placeholder="Brief description of the issue">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="block">Block *</label>
+                                <select id="block" name="block" required>
+                                    <option value="">Select Block</option>
+                                    <option value="A">Block A</option>
+                                    <option value="B">Block B</option>
+                                    <option value="C">Block C</option>
+                                    <option value="D">Block D</option>
+                    </select>
+                </div>
+                            <div class="form-group">
+                                <label for="flat">Flat Number *</label>
+                                <input type="text" id="flat" name="flat" required 
+                                       placeholder="e.g., 101">
+                            </div>
+                </div>
+
+                        <div class="form-group">
+                            <label for="description">Description *</label>
+                            <textarea id="description" name="description" required 
+                                      placeholder="Provide detailed description of the issue..." rows="4"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="images">Upload Images</label>
+                            <div class="file-upload-area" id="file-upload-area">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Drag and drop images here or click to browse</p>
+                                <input type="file" id="images" name="images" multiple accept="image/*">
+                            </div>
+                            <div id="image-preview" class="image-preview"></div>
+                        </div>
+
+                        <div class="ai-predictions" id="ai-predictions" style="display: none;">
+                            <h3>AI Analysis</h3>
+                            <div class="prediction-item">
+                                <label>Predicted Category:</label>
+                                <span id="predicted-category" class="prediction-value"></span>
+                                <span id="category-confidence" class="confidence"></span>
+                            </div>
+                            <div class="prediction-item">
+                                <label>Predicted Priority:</label>
+                                <span id="predicted-priority" class="prediction-value"></span>
+                                <span id="priority-confidence" class="confidence"></span>
+                            </div>
+                            <div class="prediction-item">
+                                <label>Recommended Assignment:</label>
+                                <span id="recommended-staff" class="prediction-value"></span>
+                        </div>
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i>
+                            Submit Complaint
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- My Complaints View -->
+            <div id="my-complaints-view" class="view">
+                <h1>My Complaints</h1>
+                <div class="filters">
+                    <select id="status-filter">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                    <select id="category-filter">
+                        <option value="">All Categories</option>
+                        <option value="plumbing">Plumbing</option>
+                        <option value="electrical">Electrical</option>
+                        <option value="cleaning">Cleaning</option>
+                        <option value="security">Security</option>
+                        <option value="parking">Parking</option>
+                        <option value="lift">Lift</option>
+                        <option value="structural">Structural</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div id="my-complaints-list" class="complaints-list detailed">
+                    <!-- User's complaints will be populated here -->
+                </div>
+                </div>
+
+            <!-- Admin View -->
+            <div id="admin-view" class="view">
+                <div class="admin-header">
+                    <h1>Admin Dashboard</h1>
+                    <div class="admin-tabs">
+                        <button class="tab-btn active" data-tab="complaints-management">Complaints</button>
+                        <button class="tab-btn" data-tab="staff-management">Staff</button>
+                        <button class="tab-btn" data-tab="analytics">Analytics</button>
+                        <button class="tab-btn" data-tab="ai-training">AI Training</button>
+                    </div>
+                </div>
+
+                <!-- Complaints Management Tab -->
+                <div id="complaints-management" class="tab-content active">
+                    <div class="admin-controls">
+                        <div class="bulk-actions">
+                            <select id="bulk-action">
+                                <option value="">Bulk Actions</option>
+                                <option value="assign">Assign Selected</option>
+                                <option value="prioritize">Change Priority</option>
+                                <option value="resolve">Mark Resolved</option>
+                            </select>
+                            <button id="apply-bulk" class="btn-secondary">Apply</button>
+                            </div>
+                        <div class="search-box">
+                            <input type="text" id="admin-search" placeholder="Search complaints...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                    <div id="admin-complaints-list" class="complaints-list admin">
+                        <!-- Admin complaints management will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Staff Management Tab -->
+                <div id="staff-management" class="tab-content">
+                    <div class="staff-controls">
+                        <button id="add-staff-btn" class="btn-primary">
+                            <i class="fas fa-plus"></i> Add Staff
+                        </button>
+                    </div>
+                    <div id="staff-list" class="staff-grid">
+                        <!-- Staff list will be populated here -->
+                        </div>
+                    </div>
+                    
+                <!-- Analytics Tab -->
+                <div id="analytics" class="tab-content">
+                    <div class="analytics-grid">
+                        <div class="chart-container">
+                            <h3>Complaints by Category</h3>
+                            <canvas id="category-chart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Resolution Time Trends</h3>
+                            <canvas id="resolution-chart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>AI Model Performance</h3>
+                            <div id="model-metrics" class="metrics-grid">
+                                <!-- Model performance metrics -->
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Staff Performance</h3>
+                            <canvas id="staff-performance-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Training Tab -->
+                <div id="ai-training" class="tab-content">
+                    <div class="training-section">
+                        <h3>Model Training Status</h3>
+                        <div class="model-status">
+                            <div class="model-card">
+                                <h4>Categorization Model</h4>
+                                <div class="model-metrics">
+                                    <span>Accuracy: 87.5%</span>
+                                    <span>Last Updated: 2 days ago</span>
+                                </div>
+                                <button class="btn-secondary">Retrain</button>
+                            </div>
+                            <div class="model-card">
+                                <h4>Priority Detection Model</h4>
+                                <div class="model-metrics">
+                                    <span>F1 Score: 82.3%</span>
+                                    <span>Last Updated: 1 week ago</span>
+                </div>
+                                <button class="btn-secondary">Retrain</button>
+            </div>
+                            <div class="model-card">
+                                <h4>Image Verification Model</h4>
+                                <div class="model-metrics">
+                                    <span>Accuracy: 91.2%</span>
+                                    <span>Last Updated: 3 days ago</span>
+                    </div>
+                                <button class="btn-secondary">Retrain</button>
+                    </div>
+                    </div>
+                    </div>
+                    
+                    <div class="training-section">
+                        <h3>Data Labeling Queue</h3>
+                        <div id="labeling-queue" class="labeling-grid">
+                            <!-- Unlabeled data will be shown here -->
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Modals -->
+        <div id="complaint-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="complaint-details">
+                    <!-- Complaint details will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="staff-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="staff-form">
+                    <!-- Staff form will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="loading-overlay" style="display: none;">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Processing with AI...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/auth-manager.js"></script>
+    <script src="js/ai-models.js"></script>
+    <script src="js/data-manager.js"></script>
+    <script src="js/ui-manager.js"></script>
+    <script src="js/app.js"></script>
+    
+    <!-- Authentication Check and Redirect -->
+    <script>
+        // Check authentication and redirect to appropriate portal
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user is authenticated
+            const session = authManager.checkExistingSession();
+            
+            if (!session) {
+                // No valid session, redirect to login
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // User is authenticated, redirect to appropriate portal
+            const portalUrls = {
+                admin: 'admin-portal.html',
+                secretary: 'secretary-portal.html',
+                resident: 'resident-portal.html'
+            };
+            
+            const targetPortal = portalUrls[session.role];
+            if (targetPortal && window.location.pathname.endsWith('index.html')) {
+                window.location.href = targetPortal;
+                return;
+            }
+            
+            // If somehow we're here and it's a resident, use current page as resident portal
+            if (session.role === 'resident') {
+                // Initialize resident portal functionality
+                console.log('Resident portal initialized for:', session.username);
+                
+                // Update user info
+                document.getElementById('current-user').textContent = 
+                    `${session.firstName} ${session.lastName} (${session.block}-${session.flat})`;
+            } else {
+                // Wrong portal for user role, redirect to correct one
+                window.location.href = targetPortal || 'login.html';
+            }
+        });
+        
+        // Global functions for resident portal
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('user-dropdown');
+            dropdown.classList.toggle('active');
+        }
+        
+        function showProfile() {
+            alert('Profile functionality - to be implemented');
+        }
+        
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                authManager.logout();
+            }
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-dropdown')) {
+                document.getElementById('user-dropdown')?.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

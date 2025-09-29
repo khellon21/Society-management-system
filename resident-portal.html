@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resident Portal - AI-Enhanced Society Issue Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <i class="fas fa-home"></i>
+                    <span>Resident Portal</span>
+                </div>
+                <div class="nav-menu">
+                    <button class="nav-btn active" data-view="dashboard">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </button>
+                    <button class="nav-btn" data-view="complaints">
+                        <i class="fas fa-plus-circle"></i> New Complaint
+                    </button>
+                    <button class="nav-btn" data-view="my-complaints">
+                        <i class="fas fa-list"></i> My Complaints
+                    </button>
+                </div>
+                <div class="user-info">
+                    <div class="user-dropdown">
+                        <button class="user-btn" onclick="toggleUserDropdown()">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="current-user">Resident</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="user-dropdown-menu" id="user-dropdown">
+                            <a href="#" onclick="showProfile()">
+                                <i class="fas fa-user"></i> Profile
+                            </a>
+                            <hr>
+                            <a href="#" onclick="logout()" class="logout-link">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view active">
+                <div class="dashboard-header">
+                    <h1>Welcome to Your Resident Portal</h1>
+                    <p class="subtitle">Report issues and track their resolution with AI-powered assistance</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="my-total-complaints">0</h3>
+                            <p>My Complaints</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="my-pending-complaints">0</h3>
+                            <p>Pending</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon progress">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="my-inprogress-complaints">0</h3>
+                            <p>In Progress</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon resolved">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="my-resolved-complaints">0</h3>
+                            <p>Resolved</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-complaints">
+                    <h2>Recent Activity</h2>
+                    <div id="my-recent-complaints-list" class="complaints-list">
+                        <!-- Recent complaints will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Complaint View -->
+            <div id="complaints-view" class="view">
+                <div class="form-container">
+                    <h1>Submit New Complaint</h1>
+                    <form id="complaint-form" class="complaint-form">
+                        <div class="form-group">
+                            <label for="complaint-title">Title *</label>
+                            <input type="text" id="complaint-title" name="title" required 
+                                   placeholder="Brief description of the issue">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Description *</label>
+                            <textarea id="description" name="description" required 
+                                      placeholder="Provide detailed description of the issue..." rows="4"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="images">Upload Images</label>
+                            <div class="file-upload-area" id="file-upload-area">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Drag and drop images here or click to browse</p>
+                                <input type="file" id="images" name="images" multiple accept="image/*">
+                            </div>
+                            <div id="image-preview" class="image-preview"></div>
+                        </div>
+
+                        <div class="ai-predictions" id="ai-predictions" style="display: none;">
+                            <h3>AI Analysis</h3>
+                            <div class="prediction-item">
+                                <label>Predicted Category:</label>
+                                <span id="predicted-category" class="prediction-value"></span>
+                                <span id="category-confidence" class="confidence"></span>
+                            </div>
+                            <div class="prediction-item">
+                                <label>Predicted Priority:</label>
+                                <span id="predicted-priority" class="prediction-value"></span>
+                                <span id="priority-confidence" class="confidence"></span>
+                            </div>
+                            <div class="prediction-item">
+                                <label>Recommended Assignment:</label>
+                                <span id="recommended-staff" class="prediction-value"></span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i>
+                            Submit Complaint
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- My Complaints View -->
+            <div id="my-complaints-view" class="view">
+                <h1>My Complaints</h1>
+                <div class="filters">
+                    <select id="status-filter">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                    <select id="category-filter">
+                        <option value="">All Categories</option>
+                        <option value="plumbing">Plumbing</option>
+                        <option value="electrical">Electrical</option>
+                        <option value="cleaning">Cleaning</option>
+                        <option value="security">Security</option>
+                        <option value="parking">Parking</option>
+                        <option value="lift">Lift</option>
+                        <option value="structural">Structural</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div id="my-complaints-list" class="complaints-list detailed">
+                    <!-- User's complaints will be populated here -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="loading-overlay" style="display: none;">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Processing with AI...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/auth-manager.js"></script>
+    <script src="js/ai-models.js"></script>
+    <script src="js/data-manager.js"></script>
+    <script src="js/ui-manager.js"></script>
+    <script src="js/app.js"></script>
+    
+    <!-- Authentication Check and Resident Portal Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verify resident access
+            const currentUser = authManager.getCurrentUser();
+            if (!currentUser || currentUser.role !== 'resident') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Update user info
+            document.getElementById('current-user').textContent = 
+                `${currentUser.firstName} ${currentUser.lastName} (${currentUser.block}-${currentUser.flat})`;
+
+            // Initialize resident portal
+            initializeResidentPortal(currentUser);
+        });
+
+        function initializeResidentPortal(user) {
+            // Load user's complaints and update dashboard
+            const allComplaints = dataManager.getComplaints();
+            const userComplaints = allComplaints.filter(c => c.residentId === user.userId);
+
+            // Update stats
+            document.getElementById('my-total-complaints').textContent = userComplaints.length;
+            document.getElementById('my-pending-complaints').textContent = 
+                userComplaints.filter(c => c.status === 'pending').length;
+            document.getElementById('my-inprogress-complaints').textContent = 
+                userComplaints.filter(c => c.status === 'in-progress').length;
+            document.getElementById('my-resolved-complaints').textContent = 
+                userComplaints.filter(c => c.status === 'resolved').length;
+
+            // Load recent complaints
+            const recentComplaints = userComplaints
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 5);
+            
+            renderComplaintsList('my-recent-complaints-list', recentComplaints);
+            renderComplaintsList('my-complaints-list', userComplaints);
+
+            // Setup navigation
+            setupNavigation();
+            
+            console.log('Resident portal initialized for:', user.username);
+        }
+
+        function setupNavigation() {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    switchView(e.target.dataset.view);
+                });
+            });
+        }
+
+        function switchView(viewName) {
+            // Update navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
+
+            // Update views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(`${viewName}-view`).classList.add('active');
+        }
+
+        function renderComplaintsList(containerId, complaints) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (complaints.length === 0) {
+                container.innerHTML = `
+                    <div class="no-complaints">
+                        <i class="fas fa-inbox"></i>
+                        <p>No complaints found</p>
+                        <button class="btn-primary" onclick="switchView('complaints')">
+                            <i class="fas fa-plus"></i> Submit Your First Complaint
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = complaints.map(complaint => `
+                <div class="complaint-card">
+                    <div class="complaint-header">
+                        <div>
+                            <div class="complaint-title">${complaint.title}</div>
+                            <div class="complaint-meta">
+                                Created ${formatDate(complaint.createdAt)}
+                                ${complaint.assignedToName ? ` • Assigned to ${complaint.assignedToName}` : ''}
+                            </div>
+                        </div>
+                        <span class="status-badge ${complaint.status}">${complaint.status.replace('-', ' ')}</span>
+                    </div>
+                    
+                    <div class="complaint-description">${complaint.description}</div>
+                    
+                    <div class="complaint-footer">
+                        <div class="complaint-tags">
+                            <span class="tag category">${complaint.category}</span>
+                            <span class="tag priority ${complaint.priority}">${complaint.priority}</span>
+                        </div>
+                        ${complaint.aiPredictions ? `
+                            <div class="ai-confidence">
+                                🤖 AI Confidence: ${Math.round(complaint.aiPredictions.category.confidence * 100)}%
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Global functions
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('user-dropdown');
+            dropdown.classList.toggle('active');
+        }
+        
+        function showProfile() {
+            alert('Profile functionality - to be implemented');
+        }
+        
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                authManager.logout();
+            }
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-dropdown')) {
+                document.getElementById('user-dropdown')?.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

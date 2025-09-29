@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Society Portal Login - AI-Enhanced Issue Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo">
+                    <i class="fas fa-building"></i>
+                    <h1>Society Portal</h1>
+                </div>
+                <p class="subtitle">AI-Enhanced Issue Tracker</p>
+            </div>
+
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" name="username" required 
+                               placeholder="Enter your username">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" required 
+                               placeholder="Enter your password">
+                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="role">Login As</label>
+                    <div class="input-group">
+                        <i class="fas fa-user-tag"></i>
+                        <select id="role" name="role" required>
+                            <option value="">Select Role</option>
+                            <option value="admin">Admin</option>
+                            <option value="secretary">Secretary</option>
+                            <option value="resident">Resident</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Sign In
+                </button>
+
+                <div class="login-options">
+                    <a href="#" class="forgot-password">Forgot Password?</a>
+                    <a href="#" class="new-registration" onclick="showRegistrationModal()">New Registration</a>
+                </div>
+            </form>
+
+            <div class="demo-credentials">
+                <h3>Demo Credentials</h3>
+                <div class="credential-grid">
+                    <div class="credential-item" onclick="fillCredentials('admin', 'admin123', 'admin')">
+                        <div class="credential-role">Admin</div>
+                        <div class="credential-details">
+                            <strong>Username:</strong> admin<br>
+                            <strong>Password:</strong> admin123
+                        </div>
+                    </div>
+                    <div class="credential-item" onclick="fillCredentials('secretary', 'sec123', 'secretary')">
+                        <div class="credential-role">Secretary</div>
+                        <div class="credential-details">
+                            <strong>Username:</strong> secretary<br>
+                            <strong>Password:</strong> sec123
+                        </div>
+                    </div>
+                    <div class="credential-item" onclick="fillCredentials('resident001', 'res123', 'resident')">
+                        <div class="credential-role">Resident</div>
+                        <div class="credential-details">
+                            <strong>Username:</strong> resident001<br>
+                            <strong>Password:</strong> res123
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="features-preview">
+            <h2>Portal Features</h2>
+            <div class="feature-tabs">
+                <button class="feature-tab active" data-feature="admin">Admin Portal</button>
+                <button class="feature-tab" data-feature="secretary">Secretary Portal</button>
+                <button class="feature-tab" data-feature="resident">Resident Portal</button>
+            </div>
+            
+            <div class="feature-content">
+                <div id="admin-features" class="feature-panel active">
+                    <h3><i class="fas fa-cog"></i> Admin Portal</h3>
+                    <ul>
+                        <li><i class="fas fa-users"></i> Add and manage residents</li>
+                        <li><i class="fas fa-user-tie"></i> Add and manage secretaries</li>
+                        <li><i class="fas fa-chart-bar"></i> View comprehensive analytics</li>
+                        <li><i class="fas fa-settings"></i> System configuration</li>
+                        <li><i class="fas fa-robot"></i> AI model management</li>
+                    </ul>
+                </div>
+                <div id="secretary-features" class="feature-panel">
+                    <h3><i class="fas fa-clipboard-list"></i> Secretary Portal</h3>
+                    <ul>
+                        <li><i class="fas fa-eye"></i> View all reported problems</li>
+                        <li><i class="fas fa-tasks"></i> Assign issues to staff</li>
+                        <li><i class="fas fa-chart-line"></i> Track resolution progress</li>
+                        <li><i class="fas fa-comments"></i> Communicate with residents</li>
+                        <li><i class="fas fa-file-alt"></i> Generate reports</li>
+                    </ul>
+                </div>
+                <div id="resident-features" class="feature-panel">
+                    <h3><i class="fas fa-home"></i> Resident Portal</h3>
+                    <ul>
+                        <li><i class="fas fa-plus-circle"></i> Report new problems</li>
+                        <li><i class="fas fa-camera"></i> Upload photos with AI analysis</li>
+                        <li><i class="fas fa-bell"></i> Track complaint status</li>
+                        <li><i class="fas fa-star"></i> Provide feedback</li>
+                        <li><i class="fas fa-history"></i> View complaint history</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div id="registration-modal" class="modal">
+        <div class="modal-content registration-modal">
+            <span class="close" onclick="closeRegistrationModal()">&times;</span>
+            <h2>New User Registration</h2>
+            
+            <form id="registration-form" class="registration-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reg-first-name">First Name *</label>
+                        <input type="text" id="reg-first-name" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-last-name">Last Name *</label>
+                        <input type="text" id="reg-last-name" name="lastName" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reg-username">Username *</label>
+                        <input type="text" id="reg-username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email *</label>
+                        <input type="email" id="reg-email" name="email" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reg-phone">Phone Number *</label>
+                        <input type="tel" id="reg-phone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-role">Role *</label>
+                        <select id="reg-role" name="role" required>
+                            <option value="">Select Role</option>
+                            <option value="resident">Resident</option>
+                            <option value="secretary">Secretary (Admin Approval Required)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="resident-details" class="role-specific" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reg-block">Block *</label>
+                            <select id="reg-block" name="block">
+                                <option value="">Select Block</option>
+                                <option value="A">Block A</option>
+                                <option value="B">Block B</option>
+                                <option value="C">Block C</option>
+                                <option value="D">Block D</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-flat">Flat Number *</label>
+                            <input type="text" id="reg-flat" name="flat" placeholder="e.g., 101">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-password">Password *</label>
+                    <input type="password" id="reg-password" name="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-confirm-password">Confirm Password *</label>
+                    <input type="password" id="reg-confirm-password" name="confirmPassword" required>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="reg-terms" name="terms" required>
+                        <span class="checkmark"></span>
+                        I agree to the Terms of Service and Privacy Policy
+                    </label>
+                </div>
+
+                <button type="submit" class="registration-btn">
+                    <i class="fas fa-user-plus"></i>
+                    Register
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Authenticating...</p>
+        </div>
+    </div>
+
+    <script src="js/auth-manager.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>
