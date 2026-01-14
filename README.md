@@ -5,7 +5,7 @@ _State of the SysAdmin 2025_
 
 ## 1. Image That Represents Systems Administration
 
-![Systems Administration](https://upload.wikimedia.org/wikipedia/commons/3/3f/Network_Operations_Center.jpg)
+![Systems Administration](./systems_administration.png)
 
 This image represents systems administration to me because it shows monitoring, infrastructure management, and constant awareness of system health.
 
