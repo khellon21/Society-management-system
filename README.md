@@ -88,7 +88,7 @@ I have completed **a couple of cybersecurity-related YouTube courses**, which he
 ## 11. Cybersecurity Advice Given
 
 The cybersecurity advice I give is:
-##Even trusted websites can have vulnerabilities. Use strong, complex passwords so that exploiting those vulnerabilities would take hackers millions of years.##
+Even trusted websites can have vulnerabilities. Use strong, complex passwords so that exploiting those vulnerabilities would take hackers millions of years.
 
 ---
 
